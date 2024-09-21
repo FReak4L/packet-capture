@@ -1,8 +1,9 @@
 #!/bin/bash
 
-# Name of file for captured packets
+# Name of the output file for captured packets
 capture_file="capture.pcap"
 
+# Function to display error messages
 error_exit() {
     echo -e "\033[31mError: $1\033[0m"  # Print in red
     exit 1
@@ -18,9 +19,10 @@ else
     echo "tshark is already installed."
 fi
 
+# Clear the terminal screen
 clear
 
-# Prompt for network interface
+# Prompt for the network interface
 read -p "Enter the network interface (e.g., eth0, wlan0): " iface
 
 # Validate the network interface
@@ -28,21 +30,21 @@ if ! ip link show "$iface" &> /dev/null; then
     error_exit "Network interface '$iface' does not exist."
 fi
 
-# Get capture duration and max packets
+# Get user inputs for capture duration and max packets
 read -p "Enter capture duration (seconds): " duration
 read -p "Enter max packets to capture: " max_packets
 
-# Remove old capture file if exists
+# Remove any existing capture file
 rm -f "$capture_file"
 
 # Start capturing packets
-echo -e "\033[1;34mStarting to capture packets on interface '$iface' for $duration seconds...\033[0m"  
+echo -e "\033[1;34mStarting to capture packets on interface '$iface' for $duration seconds...\033[0m"  # Changed color to blue
 if ! sudo tshark -i "$iface" -a duration:"$duration" -c "$max_packets" -w "$capture_file"; then
     error_exit "Failed to capture packets."
 fi
 
 # Analyze captured packets
-echo -e "\033[1;34mAnalyzing captured packets...\033[0m"  
+echo -e "\033[1;34mAnalyzing captured packets...\033[0m"  # Changed color to blue
 tshark -r "$capture_file" -Y "tcp or icmp or ip" -T fields \
 -e tcp.analysis.retransmission \
 -e tcp.flags.reset | \
@@ -65,9 +67,9 @@ END {
         exit 1;
     }
 
-    # Placeholder logic for lost and out-of-order packets
-    lost_packets = 0; # Implement logic if needed
-    out_of_order_packets = 0; # Implement logic if needed
+    # Calculate values
+    lost_packets = 0; # Placeholder value, implement logic if needed
+    out_of_order_packets = 0; # Placeholder value, implement logic if needed
 
     # Print summary metrics
     printf "\n\033[1;32m@FreakXray Session Report\033[0m\n\n";
@@ -85,6 +87,7 @@ END {
     }
 
     printf "%-30s%-20.2f\n", "Loss Rate (%)", loss_rate;
+
     printf "\n%-30s%-20s\n", "Overall Risk Level", 
     (loss_rate > 10 ? "High" : (loss_rate > 5 ? "Medium" : "Low"));
 
@@ -92,6 +95,4 @@ END {
 }
 '
 
-# Clean up the captured file after analysis
-rm -f "$capture_file"
-echo -e "\033[1;32mCapture file '$capture_file' removed after analysis.\033[0m"
+# End of script
