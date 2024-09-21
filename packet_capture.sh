@@ -3,13 +3,12 @@
 # Name of file for captured packets
 capture_file="capture.pcap"
 
-
 error_exit() {
     echo -e "\033[31mError: $1\033[0m"  # Print in red
     exit 1
 }
 
-# Check tshark
+# Check if tshark is installed
 if ! command -v tshark &> /dev/null; then
     echo "Installing tshark..."
     if ! sudo apt-get install -y tshark; then
@@ -19,10 +18,9 @@ else
     echo "tshark is already installed."
 fi
 
-
 clear
 
-# Prompt 
+# Prompt for network interface
 read -p "Enter the network interface (e.g., eth0, wlan0): " iface
 
 # Validate the network interface
@@ -34,7 +32,7 @@ fi
 read -p "Enter capture duration (seconds): " duration
 read -p "Enter max packets to capture: " max_packets
 
-# Remove capture file
+# Remove old capture file if exists
 rm -f "$capture_file"
 
 # Start capturing packets
@@ -67,9 +65,9 @@ END {
         exit 1;
     }
 
-    # Calculate values
-    lost_packets = 0; # implement logic if needed
-    out_of_order_packets = 0; # implement logic if needed
+    # Placeholder logic for lost and out-of-order packets
+    lost_packets = 0; # Implement logic if needed
+    out_of_order_packets = 0; # Implement logic if needed
 
     # Print summary metrics
     printf "\n\033[1;32m@FreakXray Session Report\033[0m\n\n";
@@ -87,10 +85,13 @@ END {
     }
 
     printf "%-30s%-20.2f\n", "Loss Rate (%)", loss_rate;
-
     printf "\n%-30s%-20s\n", "Overall Risk Level", 
     (loss_rate > 10 ? "High" : (loss_rate > 5 ? "Medium" : "Low"));
 
     printf "\n\033[1;32m%-30s\033[0m\n", "@FreakXray";
 }
 '
+
+# Clean up the captured file after analysis
+rm -f "$capture_file"
+echo -e "\033[1;32mCapture file '$capture_file' removed after analysis.\033[0m"
