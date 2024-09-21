@@ -93,4 +93,3 @@ END {
     printf "\n\033[1;32m%-30s\033[0m\n", "@FreakXray";
 }
 '
-
